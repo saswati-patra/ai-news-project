@@ -8,10 +8,11 @@ def load_test_main(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "sqlite:///:memory:")
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
 
-    for module_name in ["main", "app.database", "app.models", "app.ai"]:
-        sys.modules.pop(module_name, None)
+    for module_name in list(sys.modules):
+        if module_name == "ai_news_project" or module_name.startswith("ai_news_project."):
+            sys.modules.pop(module_name)
 
-    return importlib.import_module("main")
+    return importlib.import_module("ai_news_project.main")
 
 
 def test_youtube_summary_defaults_to_sciencechannel_and_uses_transcript(monkeypatch):

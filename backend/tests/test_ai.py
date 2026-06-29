@@ -2,7 +2,7 @@ import httpx
 import pytest
 from openai import AuthenticationError, RateLimitError
 
-from app import ai
+from ai_news_project import ai
 
 
 def test_summarize_youtube_video_reports_invalid_openai_key(monkeypatch):

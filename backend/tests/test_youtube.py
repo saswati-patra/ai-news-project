@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from app import youtube
+from ai_news_project import youtube
 
 
 FEED_XML = """<?xml version="1.0" encoding="UTF-8"?>

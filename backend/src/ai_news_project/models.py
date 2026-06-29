@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text
-from app.database import Base
+from ai_news_project.database import Base
 
 class Article(Base):
     __tablename__ = "articles"
@@ -10,5 +10,4 @@ class Article(Base):
     content = Column(Text)
     summary = Column(Text)
     
-
 

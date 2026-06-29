@@ -1,16 +1,16 @@
 from fastapi import FastAPI, HTTPException, Query
 
-from app.ai import (
+from ai_news_project.ai import (
     OpenAIConfigError,
     OpenAIQuotaError,
     OpenAISummaryError,
     summarize_text,
     summarize_youtube_video,
 )
-from app.database import Base, SessionLocal, engine
-from app.models import Article
-from app.news import sample_articles
-from app.youtube import (
+from ai_news_project.database import Base, SessionLocal, engine
+from ai_news_project.models import Article
+from ai_news_project.news import sample_articles
+from ai_news_project.youtube import (
     ChannelResolutionError,
     TranscriptUnavailableError,
     YouTubeFeedError,
