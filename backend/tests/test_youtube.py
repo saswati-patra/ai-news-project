@@ -1,9 +1,8 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
 from ai_news_project import youtube
-
 
 FEED_XML = """<?xml version="1.0" encoding="UTF-8"?>
 <feed xmlns:yt="http://www.youtube.com/xml/schemas/2015"
@@ -53,10 +52,7 @@ def test_resolve_channel_id_accepts_supported_facttechz_inputs():
 
     assert youtube.resolve_channel_id("FactTechz") == expected
     assert youtube.resolve_channel_id(expected) == expected
-    assert (
-        youtube.resolve_channel_id(f"https://www.youtube.com/channel/{expected}")
-        == expected
-    )
+    assert youtube.resolve_channel_id(f"https://www.youtube.com/channel/{expected}") == expected
 
 
 def test_resolve_channel_id_accepts_supported_science_channel_inputs():
@@ -85,7 +81,7 @@ def test_get_recent_videos_uses_feed_filters_by_days_and_keeps_shorts(monkeypatc
     videos = youtube.get_recent_videos(
         "FactTechz",
         days=5,
-        now=datetime(2026, 6, 8, 12, 0, tzinfo=timezone.utc),
+        now=datetime(2026, 6, 8, 12, 0, tzinfo=UTC),
     )
 
     assert "channel_id=UCGdPm5Aq081vVD7ih9jZf6Q" in captured["url"]
@@ -114,7 +110,7 @@ def test_get_recent_videos_defaults_to_science_channel(monkeypatch):
 
     youtube.get_recent_videos(
         days=5,
-        now=datetime(2026, 6, 8, 12, 0, tzinfo=timezone.utc),
+        now=datetime(2026, 6, 8, 12, 0, tzinfo=UTC),
     )
 
     assert "channel_id=UCvJiYiBUbw4tmpRSZT2r1Hw" in captured["url"]
@@ -134,7 +130,7 @@ def test_get_recent_videos_raises_feed_error_for_bad_xml(monkeypatch):
         youtube.get_recent_videos(
             "FactTechz",
             days=5,
-            now=datetime(2026, 6, 8, 12, 0, tzinfo=timezone.utc),
+            now=datetime(2026, 6, 8, 12, 0, tzinfo=UTC),
         )
 
 

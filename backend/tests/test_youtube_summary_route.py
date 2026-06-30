@@ -175,7 +175,9 @@ def test_youtube_summary_maps_openai_quota_errors_to_too_many_requests(monkeypat
         main,
         "summarize_youtube_video",
         lambda title, content, summary_source: (_ for _ in ()).throw(
-            main.OpenAIQuotaError("OpenAI quota exceeded. Add API credits or raise your billing limit.")
+            main.OpenAIQuotaError(
+                "OpenAI quota exceeded. Add API credits or raise your billing limit."
+            )
         ),
     )
 

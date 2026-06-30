@@ -1,5 +1,5 @@
 import re
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from urllib.parse import urlparse
 from xml.etree import ElementTree
 
@@ -57,12 +57,13 @@ def resolve_channel_id(channel: str) -> str:
                 return channel_id
 
     raise ChannelResolutionError(
-        "Unsupported channel. Use sciencechannel, FactTechz, a YouTube channel ID, or a /channel/<id> URL."
+        "Unsupported channel. Use sciencechannel, FactTechz, a YouTube channel ID, "
+        "or a /channel/<id> URL."
     )
 
 
 def _parse_published_at(value: str) -> datetime:
-    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(timezone.utc)
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).astimezone(UTC)
 
 
 def _entry_link(entry: ElementTree.Element, video_id: str) -> str:
@@ -85,9 +86,7 @@ def parse_feed_videos(feed_xml: str, published_after: datetime) -> list[dict[str
     videos = []
 
     for entry in root.findall("atom:entry", FEED_NAMESPACES):
-        published_text = entry.findtext(
-            "atom:published", default="", namespaces=FEED_NAMESPACES
-        )
+        published_text = entry.findtext("atom:published", default="", namespaces=FEED_NAMESPACES)
         if not published_text:
             continue
 
@@ -123,10 +122,7 @@ def parse_feed_videos(feed_xml: str, published_after: datetime) -> list[dict[str
             )
         )
 
-    return [
-        video
-        for _, video in sorted(videos, key=lambda item: item[0], reverse=True)
-    ]
+    return [video for _, video in sorted(videos, key=lambda item: item[0], reverse=True)]
 
 
 def get_recent_videos(
@@ -137,11 +133,11 @@ def get_recent_videos(
     if days < 1 or days > 30:
         raise ValueError("days must be between 1 and 30")
 
-    current_time = now or datetime.now(timezone.utc)
+    current_time = now or datetime.now(UTC)
     if current_time.tzinfo is None:
-        current_time = current_time.replace(tzinfo=timezone.utc)
+        current_time = current_time.replace(tzinfo=UTC)
 
-    published_after = current_time.astimezone(timezone.utc) - timedelta(days=days)
+    published_after = current_time.astimezone(UTC) - timedelta(days=days)
     channel_id = resolve_channel_id(channel_name)
     feed_url = YOUTUBE_FEED_URL.format(channel_id=channel_id)
 
