@@ -112,7 +112,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-primary text-xs font-semibold tracking-widest uppercase">
@@ -128,7 +128,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
         </Button>
       </header>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <div className="mt-6 grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <aside
           aria-label="Summary sources"
           className="border-border bg-card h-fit rounded-2xl border p-4 shadow-sm"
@@ -136,7 +136,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
           <p className="text-muted-foreground px-2 text-xs font-semibold tracking-wide uppercase">
             Sources
           </p>
-          <nav className="mt-2 grid gap-1">
+          <nav className="mt-2 grid grid-cols-2 gap-1 lg:grid-cols-1">
             {SOURCES.map((source) => {
               const selected = channel === source.channel;
 
