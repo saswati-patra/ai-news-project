@@ -210,13 +210,16 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
             className="space-y-5 lg:mt-5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-2"
           >
             {loading && (
-              <p role="status" className="text-muted-foreground text-sm">
+              <p
+                role="status"
+                className="text-muted-foreground lg:bg-background text-sm lg:sticky lg:top-0 lg:z-10"
+              >
                 Loading summaries
               </p>
             )}
 
             {error && (
-              <Alert className="flex flex-wrap items-center justify-between gap-3">
+              <Alert className="flex flex-wrap items-center justify-between gap-3 lg:sticky lg:top-0 lg:z-10">
                 <span>{error.message}</span>
                 {error.retryable && (
                   <Button

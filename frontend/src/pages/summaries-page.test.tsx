@@ -33,6 +33,12 @@ describe("SummariesPage", () => {
     render(<SummariesPage loadSummaries={loader} />);
 
     expect(screen.getByRole("status")).toHaveTextContent("Loading summaries");
+    expect(screen.getByRole("status")).toHaveClass(
+      "lg:sticky",
+      "lg:top-0",
+      "lg:z-10",
+      "lg:bg-background"
+    );
     await waitFor(() =>
       expect(loader).toHaveBeenCalledWith({ channel: "sciencechannel", days: 5 })
     );
@@ -49,11 +55,18 @@ describe("SummariesPage", () => {
     const main = screen.getByRole("main");
     const sources = screen.getByRole("complementary", { name: "Summary sources" });
     const results = screen.getByRole("region", { name: "Summary results" });
+    const contentGrid = sources.parentElement;
+    const dashboard = results.parentElement;
     const filterForm = screen.getByRole("button", { name: "Load summaries" }).closest("form");
 
     expect(main).toHaveClass("lg:h-dvh", "lg:overflow-hidden");
+    expect(main).not.toHaveClass("overflow-hidden");
+    expect(contentGrid).toHaveClass("lg:min-h-0", "lg:flex-1");
     expect(sources).toHaveClass("lg:h-full", "lg:overflow-y-auto");
+    expect(sources).not.toHaveClass("overflow-y-auto");
+    expect(dashboard).toHaveClass("lg:flex", "lg:min-h-0", "lg:flex-col");
     expect(results).toHaveClass("lg:min-h-0", "lg:flex-1", "lg:overflow-y-auto");
+    expect(results).not.toHaveClass("overflow-y-auto");
     expect(filterForm).not.toBeNull();
     expect(results).not.toContainElement(filterForm);
     expect(within(results).getByText("Inside dark matter")).toBeInTheDocument();
@@ -144,7 +157,9 @@ describe("SummariesPage", () => {
     await screen.findByText("Inside dark matter");
     await user.click(screen.getByRole("button", { name: "Refresh" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("OpenAI quota exceeded");
+    const alert = await screen.findByRole("alert");
+    expect(alert).toHaveTextContent("OpenAI quota exceeded");
+    expect(alert).toHaveClass("lg:sticky", "lg:top-0", "lg:z-10", "bg-red-50");
     expect(screen.getByText("Inside dark matter")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Retry" }));
     await waitFor(() => expect(loader).toHaveBeenCalledTimes(3));
