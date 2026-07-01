@@ -1,8 +1,9 @@
-.PHONY: help check format test build backend-check backend-format backend-lint backend-format-check backend-test frontend-check frontend-format frontend-lint frontend-format-check frontend-test frontend-build
+.PHONY: help dev dev-test check format test build backend-check backend-format backend-lint backend-format-check backend-test frontend-check frontend-format frontend-lint frontend-format-check frontend-test frontend-build
 
 help:
 	@echo "AI News Project commands"
 	@echo ""
+	@echo "  make dev              Start Postgres, backend, and frontend"
 	@echo "  make check            Run backend and frontend quality gates"
 	@echo "  make format           Auto-fix lint and formatting issues"
 	@echo "  make test             Run backend and frontend tests"
@@ -13,11 +14,18 @@ help:
 	@echo "  make frontend-check   ESLint, Prettier check, Vitest, Vite build"
 	@echo "  make frontend-format  ESLint fix and Prettier write"
 
-check: backend-check frontend-check
+dev:
+	@./scripts/dev.sh
+
+dev-test:
+	bash -n scripts/dev.sh tests/dev_test.sh
+	bash tests/dev_test.sh
+
+check: dev-test backend-check frontend-check
 
 format: backend-format frontend-format
 
-test: backend-test frontend-test
+test: dev-test backend-test frontend-test
 
 build: frontend-build
 

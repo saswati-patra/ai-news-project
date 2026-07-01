@@ -70,4 +70,5 @@ DEV_PID=""
 
 [[ $status -eq 130 ]]
 grep -q 'stop postgres$' "$CALL_LOG"
+make -C "$ROOT_DIR" --dry-run dev | grep -q 'scripts/dev.sh'
 printf 'dev lifecycle test passed\n'

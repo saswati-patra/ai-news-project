@@ -15,6 +15,21 @@ The backend exposes the existing news routes plus `GET /youtube-summary`. The
 frontend starts on the YouTube summary dashboard and calls that endpoint through
 Vite's local proxy.
 
+## Local Development
+
+Prerequisites are Docker, uv, Node.js, and npm. Install frontend dependencies
+once with `cd frontend && npm install`, and create `backend/.env` as described
+below.
+
+Start the database, backend, and frontend from the repository root:
+
+```bash
+make dev
+```
+
+Open the API at <http://127.0.0.1:8000> and the frontend at
+<http://127.0.0.1:5173>. Press `Ctrl+C` to stop PostgreSQL, FastAPI, and Vite.
+
 ## Quality Commands
 
 From the repo root:
@@ -33,7 +48,7 @@ applies Ruff, ESLint, and Prettier fixes.
 
 ## Backend
 
-Start Postgres:
+For backend-only development, start Postgres:
 
 ```bash
 docker compose up -d
@@ -70,7 +85,7 @@ cd frontend
 npm install
 ```
 
-Run the backend on port 8000, then start Vite:
+For frontend-only development, run the backend on port 8000, then start Vite:
 
 ```bash
 npm run dev
