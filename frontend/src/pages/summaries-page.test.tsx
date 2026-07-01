@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import type { YouTubeSummary } from "@/lib/youtube-summary-api";
@@ -36,6 +37,98 @@ describe("SummariesPage", () => {
       expect(loader).toHaveBeenCalledWith({ channel: "sciencechannel", days: 5 })
     );
     expect(await screen.findByText("Inside dark matter")).toBeInTheDocument();
+  });
+
+  it("disables all interactive controls while summaries are loading", () => {
+    const loader = vi.fn(() => new Promise<YouTubeSummary[]>(() => {}));
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    expect.soft(screen.getByLabelText("Channel")).toBeDisabled();
+    expect.soft(screen.getByLabelText("Days")).toBeDisabled();
+    expect.soft(screen.getByRole("button", { name: "Load summaries" })).toBeDisabled();
+    expect.soft(screen.getByRole("button", { name: "Refresh" })).toBeDisabled();
+    expect.soft(screen.getByRole("button", { name: "Science Channel" })).toBeDisabled();
+    expect.soft(screen.getByRole("button", { name: "FactTechz" })).toBeDisabled();
+  });
+
+  it("loads FactTechz when its source shortcut is selected", async () => {
+    const user = userEvent.setup();
+    const loader = vi.fn(async () => summaries);
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    await screen.findByText("Inside dark matter");
+    await user.click(screen.getByRole("button", { name: "FactTechz" }));
+    await waitFor(() => expect(loader).toHaveBeenLastCalledWith({ channel: "facttechz", days: 5 }));
+  });
+
+  it("submits a supported channel and day window", async () => {
+    const user = userEvent.setup();
+    const loader = vi.fn(async () => summaries);
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    await screen.findByText("Inside dark matter");
+    await user.clear(screen.getByLabelText("Channel"));
+    await user.type(screen.getByLabelText("Channel"), "Science Channel");
+    await user.clear(screen.getByLabelText("Days"));
+    await user.type(screen.getByLabelText("Days"), "14");
+    await user.click(screen.getByRole("button", { name: "Load summaries" }));
+
+    await waitFor(() =>
+      expect(loader).toHaveBeenLastCalledWith({ channel: "Science Channel", days: 14 })
+    );
+    expect(screen.getByText("14 day window")).toBeInTheDocument();
+  });
+
+  it("rejects a day window outside one through thirty", async () => {
+    const user = userEvent.setup();
+    const loader = vi.fn(async () => summaries);
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    await screen.findByText("Inside dark matter");
+    await user.clear(screen.getByLabelText("Days"));
+    await user.type(screen.getByLabelText("Days"), "31");
+    await user.click(screen.getByRole("button", { name: "Load summaries" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("Days must be between 1 and 30");
+    expect(screen.queryByRole("button", { name: "Retry" })).not.toBeInTheDocument();
+    expect(loader).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows an empty state when no recent videos are found", async () => {
+    const loader = vi.fn(async () => []);
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    expect(await screen.findByText("No recent videos found")).toBeInTheDocument();
+  });
+
+  it("preserves summaries when a refresh fails and retries the request", async () => {
+    const user = userEvent.setup();
+    let attempt = 0;
+    const loader = vi.fn(async () => {
+      attempt += 1;
+
+      if (attempt === 2) {
+        throw new Error("OpenAI quota exceeded");
+      }
+
+      return summaries;
+    });
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    await screen.findByText("Inside dark matter");
+    await user.click(screen.getByRole("button", { name: "Refresh" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("OpenAI quota exceeded");
+    expect(screen.getByText("Inside dark matter")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Retry" }));
+    await waitFor(() => expect(loader).toHaveBeenCalledTimes(3));
+    expect(loader).toHaveBeenNthCalledWith(3, { channel: "sciencechannel", days: 5 });
   });
 
   it("derives metrics and renders summary quality", async () => {
