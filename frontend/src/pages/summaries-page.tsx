@@ -112,7 +112,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <main className="mx-auto min-h-screen max-w-7xl px-4 py-6 sm:px-6 lg:flex lg:h-dvh lg:min-h-0 lg:flex-col lg:overflow-hidden lg:px-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-primary text-xs font-semibold tracking-widest uppercase">
@@ -128,10 +128,10 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
         </Button>
       </header>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <div className="mt-6 grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <aside
           aria-label="Summary sources"
-          className="border-border bg-card h-fit rounded-2xl border p-4 shadow-sm"
+          className="border-border bg-card h-fit rounded-2xl border p-4 shadow-sm lg:h-full lg:overflow-y-auto"
         >
           <p className="text-muted-foreground px-2 text-xs font-semibold tracking-wide uppercase">
             Sources
@@ -156,8 +156,11 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
           </nav>
         </aside>
 
-        <section aria-labelledby="briefing-title" className="min-w-0 space-y-5">
-          <div>
+        <section
+          aria-labelledby="briefing-title"
+          className="min-w-0 space-y-5 lg:flex lg:min-h-0 lg:flex-col lg:space-y-0"
+        >
+          <div className="lg:shrink-0">
             <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
               Dashboard
             </p>
@@ -168,7 +171,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
 
           <form
             noValidate
-            className="border-border bg-card grid gap-4 rounded-2xl border p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_7rem_auto] sm:items-end"
+            className="border-border bg-card grid gap-4 rounded-2xl border p-4 shadow-sm sm:grid-cols-[minmax(0,1fr)_7rem_auto] sm:items-end lg:mt-5 lg:shrink-0"
             onSubmit={submit}
           >
             <div className="grid gap-1.5">
@@ -201,47 +204,53 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
             </Button>
           </form>
 
-          {loading && (
-            <p role="status" className="text-muted-foreground text-sm">
-              Loading summaries
-            </p>
-          )}
-
-          {error && (
-            <Alert className="flex flex-wrap items-center justify-between gap-3">
-              <span>{error.message}</span>
-              {error.retryable && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={loading}
-                  onClick={() => void runQuery(lastRequestedQuery)}
-                >
-                  Retry
-                </Button>
-              )}
-            </Alert>
-          )}
-
-          {summaries.length > 0 && (
-            <div className="space-y-4">
-              <SummaryMetrics summaries={summaries} days={successfulQuery.days} />
-              <div className="grid gap-4">
-                {summaries.map((summary) => (
-                  <SummaryCard key={summary.video_id} summary={summary} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {!loading && !error && summaries.length === 0 && (
-            <div className="border-border bg-card rounded-2xl border border-dashed p-8 text-center">
-              <h3 className="text-foreground text-lg font-semibold">No recent videos found</h3>
-              <p className="text-muted-foreground mt-2 text-sm">
-                Try another source or expand the day window.
+          <div
+            role="region"
+            aria-label="Summary results"
+            className="space-y-5 lg:mt-5 lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:pr-2"
+          >
+            {loading && (
+              <p role="status" className="text-muted-foreground text-sm">
+                Loading summaries
               </p>
-            </div>
-          )}
+            )}
+
+            {error && (
+              <Alert className="flex flex-wrap items-center justify-between gap-3">
+                <span>{error.message}</span>
+                {error.retryable && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={loading}
+                    onClick={() => void runQuery(lastRequestedQuery)}
+                  >
+                    Retry
+                  </Button>
+                )}
+              </Alert>
+            )}
+
+            {summaries.length > 0 && (
+              <div className="space-y-4">
+                <SummaryMetrics summaries={summaries} days={successfulQuery.days} />
+                <div className="grid gap-4">
+                  {summaries.map((summary) => (
+                    <SummaryCard key={summary.video_id} summary={summary} />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {!loading && !error && summaries.length === 0 && (
+              <div className="border-border bg-card rounded-2xl border border-dashed p-8 text-center">
+                <h3 className="text-foreground text-lg font-semibold">No recent videos found</h3>
+                <p className="text-muted-foreground mt-2 text-sm">
+                  Try another source or expand the day window.
+                </p>
+              </div>
+            )}
+          </div>
         </section>
       </div>
     </main>

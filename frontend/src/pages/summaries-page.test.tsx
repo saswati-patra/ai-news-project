@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -37,6 +37,26 @@ describe("SummariesPage", () => {
       expect(loader).toHaveBeenCalledWith({ channel: "sciencechannel", days: 5 })
     );
     expect(await screen.findByText("Inside dark matter")).toBeInTheDocument();
+  });
+
+  it("keeps desktop filters fixed outside independently scrolling results", async () => {
+    const loader = vi.fn(async () => summaries);
+
+    render(<SummariesPage loadSummaries={loader} />);
+
+    await screen.findByText("Inside dark matter");
+
+    const main = screen.getByRole("main");
+    const sources = screen.getByRole("complementary", { name: "Summary sources" });
+    const results = screen.getByRole("region", { name: "Summary results" });
+    const filterForm = screen.getByRole("button", { name: "Load summaries" }).closest("form");
+
+    expect(main).toHaveClass("lg:h-dvh", "lg:overflow-hidden");
+    expect(sources).toHaveClass("lg:h-full", "lg:overflow-y-auto");
+    expect(results).toHaveClass("lg:min-h-0", "lg:flex-1", "lg:overflow-y-auto");
+    expect(filterForm).not.toBeNull();
+    expect(results).not.toContainElement(filterForm);
+    expect(within(results).getByText("Inside dark matter")).toBeInTheDocument();
   });
 
   it("disables all interactive controls while summaries are loading", () => {
