@@ -1,16 +1,37 @@
-# Python-generated files
+# Python
 __pycache__/
-*.py[oc]
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
 build/
 dist/
 wheels/
 *.egg-info
 
-# Virtual environments
-.venv
+# JavaScript / frontend
+node_modules/
+*.tsbuildinfo
 
+# Environments and local config
+.venv/
+venv/
+env/
 .env
+.env.*
+!.env.example
 
+# Editors and OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Local agent tooling
 .superpowers/
 .worktrees/
 docs/superpowers/
