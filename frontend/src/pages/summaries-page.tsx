@@ -119,7 +119,7 @@ export function SummariesPage({ loadSummaries = fetchYouTubeSummaries }: Summari
             AI Newsroom
           </p>
           <h1 className="text-foreground mt-1 text-3xl font-semibold tracking-tight">
-            YouTube science briefing
+            YouTube briefing
           </h1>
         </div>
         <Button variant="outline" disabled={loading} onClick={() => void runQuery(successfulQuery)}>
