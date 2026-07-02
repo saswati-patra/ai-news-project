@@ -26,6 +26,7 @@ EOF
 
 cat >"$TEST_DIR/bin/uv" <<'EOF'
 #!/usr/bin/env bash
+sleep 0.2
 printf 'uv %s\n' "$*" >>"$CALL_LOG"
 while true; do sleep 1; done
 EOF
@@ -51,7 +52,8 @@ PATH="$TEST_DIR/bin:$PATH" python3 "$TEST_DIR/launch.py" \
 DEV_PID=$!
 
 for _ in {1..50}; do
-  if grep -q '^npm run dev$' "$CALL_LOG"; then
+  if grep -q '^uv run uvicorn ai_news_project.main:app --reload --app-dir src$' "$CALL_LOG" &&
+    grep -q '^npm run dev$' "$CALL_LOG"; then
     break
   fi
   sleep 0.1
